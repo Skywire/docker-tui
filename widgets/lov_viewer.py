@@ -18,7 +18,7 @@ class LogViewer(Container):
     update_timer: Timer = None
 
     def compose(self) -> ComposeResult:
-        self.text_log = TextLog(highlight=True, markup=True)
+        self.text_log = TextLog(highlight=True)
         yield self.text_log
 
     def watch_container(self):
