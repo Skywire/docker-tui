@@ -14,14 +14,8 @@ from textual.widgets import TextLog
 class LogViewer(Container):
     text_log: TextLog
     container: str = reactive(None)
-    docker: DockerClient
+    docker: DockerClient = DockerClient()
     update_timer: Timer = None
-
-    def __init__(self, *children: Widget, name: str | None = None, id: str | None = None,
-                 classes: str | None = None) -> None:
-        super().__init__(*children, name=name, id=id, classes=classes)
-
-        self.docker = DockerClient()
 
     def compose(self) -> ComposeResult:
         self.text_log = TextLog(highlight=True, markup=True)
