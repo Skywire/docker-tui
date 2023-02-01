@@ -28,13 +28,18 @@ class ProjectTree(Container):
         self.tree: Tree[dict] = Tree("Projects")
         self.tree.root.expand()
         self.containers = get_containers()
+        self.text_log = self.app.query_one('#docker-output')
 
         yield self.tree
 
     def action_docker_up(self):
         docker: DockerClient = DockerClient(compose_files=self.selected_project.file)
 
-        docker.compose.up(detach=True)
+        output = docker.compose.up(detach=True)
+
+        for line in output:
+            self.text_log.clear()
+            self.text_log.write(line)
 
         self.containers = get_containers()
         self.set_projects(get_projects())
@@ -42,7 +47,11 @@ class ProjectTree(Container):
     def action_docker_down(self):
         docker: DockerClient = DockerClient(compose_files=self.selected_project.file)
 
-        docker.compose.down()
+        output = docker.compose.down()
+
+        for line in output:
+            self.text_log.clear()
+            self.text_log.write(line)
 
         self.containers = get_containers()
         self.set_projects(get_projects())

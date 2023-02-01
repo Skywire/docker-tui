@@ -20,6 +20,9 @@ class DockerApp(App):
     TITLE = "Docker"
 
     DEFAULT_CSS = """
+        #top-view {
+            height: 80%;
+        }
         #top-view ProjectTree {
             width: 20%;
         }
@@ -31,7 +34,7 @@ class DockerApp(App):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Horizontal(ProjectTree(), LogViewer(), id='top-view')
-        yield Horizontal(TextLog(id='docker-output'))
+        yield Horizontal(TextLog(id='docker-output', highlight=True))
         yield Footer()
 
     def on_mount(self) -> None:
