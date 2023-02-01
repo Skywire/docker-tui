@@ -5,7 +5,8 @@ from textual import events, log
 from textual.app import ComposeResult
 from textual.containers import Container
 from textual.reactive import reactive
-from textual.widgets import Tree
+from textual.timer import Timer
+from textual.widgets import Tree, TreeNode
 
 from docker_service.service import get_containers
 from entities.project_db import get_projects
@@ -18,6 +19,8 @@ class ProjectTree(Container):
     projects: Optional[Dict[str, ProjectModel]] = reactive(None)
     containers: Optional[Dict[str, Container]] = None
     selected_project: ProjectModel = None
+    selected_node: TreeNode = None
+    container_update_timer: Timer = None
 
     BINDINGS = [
         ('d', 'docker_down', 'Docker Down'),
@@ -67,11 +70,18 @@ class ProjectTree(Container):
 
         self.tree.focus()
 
+        self.container_update_timer = self.set_interval(60, self.update_containers, pause=False)
+
     def on_tree_node_selected(self, event: Tree.NodeSelected):
         if 'container' in event.node.data.keys():
             self.parent.query_one(LogViewer).container = event.node.data['container']
 
         self.selected_project = event.node.data['project']
+        self.selected_node = event.node
+
+    def update_containers(self):
+        self.containers = get_containers()
+        self.set_projects(self.projects)
 
     def set_projects(self, projects):
         self.tree.clear()
@@ -88,3 +98,5 @@ class ProjectTree(Container):
                         display_name = f"🔴 {service.container_name}"
 
                     branch.add_leaf(display_name, data)
+        if self.selected_node:
+            self.tree.get_node_by_id(self.selected_node.id).expand()
