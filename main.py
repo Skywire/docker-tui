@@ -1,6 +1,7 @@
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import Header, Footer, TextLog
+from textual.widgets._header import HeaderIcon
 
 from docker_service.service import get_containers
 from entities.project_db import get_projects
@@ -39,6 +40,7 @@ class DockerApp(App):
 
     def on_mount(self) -> None:
         self.update_projects()
+        self.query_one(HeaderIcon).icon = '🐋'
 
     def update_projects(self):
         projects = get_projects()

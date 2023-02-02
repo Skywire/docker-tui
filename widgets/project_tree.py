@@ -15,6 +15,14 @@ from widgets.lov_viewer import LogViewer
 
 
 class ProjectTree(Container):
+
+    DEFAULT_CSS = """
+    
+        Tree {
+            padding: 1 0 0 1;
+        }
+    """
+
     tree: Tree = None
     projects: Optional[Dict[str, ProjectModel]] = reactive(None)
     containers: Optional[Dict[str, Container]] = None

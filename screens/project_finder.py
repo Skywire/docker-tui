@@ -4,12 +4,14 @@ from os.path import dirname
 from pathlib import Path
 from typing import Optional
 
+from textual import events
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.message import Message
 from textual.screen import Screen
 from textual.widgets import DirectoryTree, Button, TreeNode, Header, Footer, Label
 from textual.widgets._directory_tree import DirEntry
+from textual.widgets._header import HeaderIcon
 
 from docker_service.service import get_docker_compose_services
 from entities.project_db import add_project, get_home_directory, set_home_directory, has_home_directory, \
@@ -75,6 +77,9 @@ class ProjectFinder(Screen):
             ),
         )
         yield Footer()
+
+    def _on_mount(self, event: events.Mount) -> None:
+        self.query_one(HeaderIcon).icon = '🐋';
 
     def on_tree_node_highlighted(self, event: DirectoryTree.NodeHighlighted):
         self.selected_file = None
