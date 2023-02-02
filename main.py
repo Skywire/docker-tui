@@ -15,7 +15,7 @@ class DockerApp(App):
         ('a', 'push_screen("project_finder")', 'Add project'),
     ]
 
-    SCREENS = {"project_finder": ProjectFinder()}
+    SCREENS = {"project_finder": ProjectFinder("Add Project")}
 
     TITLE = "Docker"
 

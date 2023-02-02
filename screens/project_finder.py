@@ -8,7 +8,7 @@ from textual.app import ComposeResult
 from textual.containers import Horizontal
 from textual.message import Message
 from textual.screen import Screen
-from textual.widgets import DirectoryTree, Button, TreeNode
+from textual.widgets import DirectoryTree, Button, TreeNode, Header, Footer
 from textual.widgets._directory_tree import DirEntry
 
 from docker_service.service import get_docker_compose_services
@@ -37,9 +37,8 @@ class ComposeDirectoryTree(DirectoryTree):
 
 
 class ProjectFinder(Screen):
-    class ProjectAdded(Message):
-        pass
-
+    BINDINGS = [("escape", "app.pop_screen", "Close screen")]
+    
     DEFAULT_CSS = """
         ProjectFinder DirectoryTree {
             width: 80%
@@ -48,16 +47,17 @@ class ProjectFinder(Screen):
         } 
     """
 
+    class ProjectAdded(Message):
+        pass
+
     selected_file: str = None
 
-    def __init__(self, name: str | None = None, id: str | None = None, classes: str | None = None) -> None:
-        name = "Add Project"
-        super().__init__(name, id, classes)
-
     def compose(self) -> ComposeResult:
+        yield Header()
         yield Horizontal(
             ComposeDirectoryTree(join(os.path.expanduser('~') + "/")),
             Button("Add Project"))
+        yield Footer()
 
     def on_directory_tree_file_selected(self, event: DirectoryTree.FileSelected):
         self.selected_file = event.path
