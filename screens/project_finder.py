@@ -56,7 +56,7 @@ class ProjectFinder(Screen):
 
     def compose(self) -> ComposeResult:
         yield Horizontal(
-            ComposeDirectoryTree(join(os.path.expanduser('~') + "/dev/magento")),
+            ComposeDirectoryTree(join(os.path.expanduser('~') + "/")),
             Button("Add Project"))
 
     def on_directory_tree_file_selected(self, event: DirectoryTree.FileSelected):
