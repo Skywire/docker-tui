@@ -1,11 +1,15 @@
+import os
+from os.path import join
+
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import Header, Footer, TextLog
 from textual.widgets._header import HeaderIcon
 
-from docker_service.service import get_containers
+from docker_service.service import find_compose_files
 from entities.project_db import get_projects
 from screens.project_finder import ProjectFinder
+from screens.project_scanner import ProjectScanner
 from widgets.lov_viewer import LogViewer
 from widgets.project_tree import ProjectTree
 
@@ -14,9 +18,13 @@ class DockerApp(App):
     BINDINGS = [
         ('q', 'quit', 'Quit'),
         ('a', 'push_screen("project_finder")', 'Add project'),
+        ('s', 'push_screen("project_scanner")', 'Scan for projects'),
     ]
 
-    SCREENS = {"project_finder": ProjectFinder()}
+    SCREENS = {
+        "project_finder": ProjectFinder(),
+        "project_scanner": ProjectScanner()
+    }
 
     TITLE = "Docker"
 
@@ -50,6 +58,9 @@ class DockerApp(App):
 
     def on_project_finder_project_added(self):
         self.pop_screen()
+        self.update_projects()
+
+    def on_project_scanner_project_added(self):
         self.update_projects()
 
 
