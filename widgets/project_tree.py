@@ -95,6 +95,7 @@ class ProjectTree(Container):
         self.tree.clear()
         if self.projects:
             for project_name, project in projects.items():
+                expand_project = False
                 branch = self.tree.root.add(project_name, {"project": project})
                 for service_name, service in project.services.items():
                     data = {"project": project, "service": service}
@@ -102,9 +103,13 @@ class ProjectTree(Container):
                     if service.container_name in self.containers.keys():
                         display_name = f"🟢 {service.container_name}"
                         data["container"] = self.containers[service.container_name]
+                        expand_project = True
                     else:
                         display_name = f"🔴 {service.container_name}"
 
                     branch.add_leaf(display_name, data)
+
+                if expand_project:
+                    branch.expand()
         if self.selected_node:
             self.tree.get_node_by_id(self.selected_node.id).expand()
