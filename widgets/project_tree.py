@@ -1,6 +1,6 @@
 from typing import Optional, Dict
 
-from python_on_whales import DockerClient
+from python_on_whales import DockerClient, Service
 from textual import events, log
 from textual.app import ComposeResult
 from textual.containers import Container
@@ -27,6 +27,7 @@ class ProjectTree(Container):
     projects: Optional[Dict[str, ProjectModel]] = reactive(None)
     containers: Optional[Dict[str, Container]] = None
     selected_project: ProjectModel = None
+    selected_service: Optional[Service] = None
     selected_node: TreeNode = None
     container_update_timer: Timer = None
 
@@ -80,11 +81,17 @@ class ProjectTree(Container):
 
         self.container_update_timer = self.set_interval(60, self.update_containers, pause=False)
 
-    def on_tree_node_selected(self, event: Tree.NodeSelected):
+    def on_tree_node_highlighted(self, event: Tree.NodeHighlighted):
+        self.parent.query_one(LogViewer).container = None
+        self.selected_service = None
+
+        self.selected_project = event.node.data['project']
+        if 'service' in event.node.data.keys():
+            self.selected_service = event.node.data['service']
+
         if 'container' in event.node.data.keys():
             self.parent.query_one(LogViewer).container = event.node.data['container']
 
-        self.selected_project = event.node.data['project']
         self.selected_node = event.node
 
     def update_containers(self):

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from typing import Optional
 
 from python_on_whales import DockerClient
 from textual.app import ComposeResult
@@ -13,7 +14,7 @@ from textual.widgets import TextLog
 
 class LogViewer(Container):
     text_log: TextLog
-    container: str = reactive(None)
+    container: Optional[str] = reactive(None)
     docker: DockerClient = DockerClient()
     update_timer: Timer = None
 
@@ -21,8 +22,12 @@ class LogViewer(Container):
         self.text_log = TextLog(highlight=True)
         yield self.text_log
 
-    def watch_container(self):
-        self.start_logging()
+    def watch_container(self, old, new):
+        if self.update_timer and new is None:
+            self.text_log.clear()
+            self.update_timer.pause()
+        else:
+            self.start_logging()
 
     def start_logging(self) -> None:
         if not self.container:
