@@ -4,9 +4,10 @@ from os.path import join
 
 from models.project_model import ProjectModel
 
-project_db_path = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../var") + "/projects"
-config_db_path = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../var") + "/config"
-
+db_root = join(os.path.expanduser('~'), '.docker-tui')
+os.makedirs(db_root, exist_ok=True)
+project_db_path = db_root + "/projects"
+config_db_path = db_root + "/config"
 
 def get_projects():
     projects = {}
