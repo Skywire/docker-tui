@@ -17,6 +17,7 @@ from docker_service.service import get_docker_compose_services
 from entities.project_db import add_project, get_home_directory, set_home_directory, has_home_directory, \
     delete_home_directory
 from models.project_model import ProjectModel
+from screens.project_scanner import ProjectScanner
 
 
 class ComposeDirectoryTree(DirectoryTree):
@@ -40,7 +41,10 @@ class ComposeDirectoryTree(DirectoryTree):
 
 
 class ProjectFinder(Screen):
-    BINDINGS = [("escape", "app.pop_screen", "Close screen")]
+    BINDINGS = [
+        ('s', 'push_screen("project_scanner")', 'Scan for projects'),
+        ("escape", "app.pop_screen", "Close screen"),
+    ]
 
     DEFAULT_CSS = """
         #heading {

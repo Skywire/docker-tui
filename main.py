@@ -18,12 +18,12 @@ class DockerApp(App):
     BINDINGS = [
         ('q', 'quit', 'Quit'),
         ('a', 'push_screen("project_finder")', 'Add project'),
-        ('s', 'push_screen("project_scanner")', 'Scan for projects'),
     ]
 
     SCREENS = {
         "project_finder": ProjectFinder(),
         "project_scanner": ProjectScanner()
+
     }
 
     TITLE = "Docker"
