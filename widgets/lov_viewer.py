@@ -29,12 +29,12 @@ class LogViewer(Container):
         else:
             self.start_logging()
 
-    def start_logging(self) -> None:
+    async def start_logging(self) -> None:
         if not self.container:
             return
 
         if self.update_timer:
-            self.update_timer.stop()
+            await self.update_timer.stop()
             self.text_log.clear()
 
         self.text_log.write(self.docker.logs(self.container))

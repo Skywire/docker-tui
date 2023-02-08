@@ -11,6 +11,7 @@ from textual.widgets import Tree, TreeNode
 from docker_service.service import get_containers
 from entities.project_db import get_projects
 from models.project_model import ProjectModel
+from screens.confirm_up import ConfirmUp
 from widgets.lov_viewer import LogViewer
 
 
@@ -47,6 +48,15 @@ class ProjectTree(Container):
     def action_docker_up(self):
         docker: DockerClient = DockerClient(compose_files=self.selected_project.file)
 
+        running = len(docker.ps()) > 0
+        if running:
+            self.app.push_screen(ConfirmUp())
+        else:
+            self.docker_up()
+
+    def docker_up(self):
+        docker: DockerClient = DockerClient(compose_files=self.selected_project.file)
+
         output = docker.compose.up(detach=True)
 
         for line in output:
@@ -57,6 +67,9 @@ class ProjectTree(Container):
         self.set_projects(get_projects())
 
     def action_docker_down(self):
+        self.docker_down()
+
+    def docker_down(self):
         docker: DockerClient = DockerClient(compose_files=self.selected_project.file)
 
         output = docker.compose.down()

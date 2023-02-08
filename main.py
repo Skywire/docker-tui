@@ -1,13 +1,10 @@
-import os
-from os.path import join
-
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import Header, Footer, TextLog
 from textual.widgets._header import HeaderIcon
 
-from docker_service.service import find_compose_files
 from entities.project_db import get_projects
+from screens.confirm_up import ConfirmUp
 from screens.project_finder import ProjectFinder
 from screens.project_scanner import ProjectScanner
 from widgets.lov_viewer import LogViewer
@@ -62,6 +59,13 @@ class DockerApp(App):
 
     def on_project_scanner_project_added(self):
         self.update_projects()
+
+    async def on_confirm_up_confirm_result(self, event: ConfirmUp.ConfirmResult):
+        self.pop_screen()
+
+        if event.confirm:
+            tree: ProjectTree = self.query_one(ProjectTree)
+            tree.docker_up()
 
 
 if __name__ == '__main__':
