@@ -1,3 +1,4 @@
+import os
 from typing import Optional, Dict
 
 from python_on_whales import DockerClient, Service
@@ -12,6 +13,8 @@ from docker_service.service import get_containers
 from entities.project_db import get_projects
 from models.project_model import ProjectModel
 from widgets.lov_viewer import LogViewer
+
+from config import config
 
 
 class ProjectTree(Container):
@@ -33,7 +36,8 @@ class ProjectTree(Container):
 
     BINDINGS = [
         ('d', 'docker_down', 'Docker Down'),
-        ('u', 'docker_up', 'Docker Up')
+        ('u', 'docker_up', 'Docker Up'),
+        ('s', 'container_shell', 'Open Container Shell')
     ]
 
     def compose(self) -> ComposeResult:
@@ -68,6 +72,16 @@ class ProjectTree(Container):
         self.containers = get_containers()
         self.set_projects(get_projects())
 
+    def action_container_shell(self):
+        if not self.selected_service:
+            return
+
+        external_shell = config['external_shell']
+        if not external_shell:
+            return
+
+        os.system(external_shell + ' docker exec -it ouronyx_phpfpm bash')
+
     def watch_projects(self, old, new) -> None:
         self.set_projects(new)
 
@@ -84,6 +98,9 @@ class ProjectTree(Container):
     def on_tree_node_highlighted(self, event: Tree.NodeHighlighted):
         self.parent.query_one(LogViewer).container = None
         self.selected_service = None
+
+        if not event.node.data or 'project' not in event.node.data.keys():
+            return
 
         self.selected_project = event.node.data['project']
         if 'service' in event.node.data.keys():
