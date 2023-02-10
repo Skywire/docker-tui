@@ -161,4 +161,3 @@ cython_debug/
 
 .env
 bin
-.config.yml.dist

@@ -9,16 +9,14 @@ from textual.reactive import reactive
 from textual.timer import Timer
 from textual.widgets import Tree, TreeNode
 
+from config import config
 from docker_service.service import get_containers
 from entities.project_db import get_projects
 from models.project_model import ProjectModel
 from widgets.lov_viewer import LogViewer
 
-from config import config
-
 
 class ProjectTree(Container):
-
     DEFAULT_CSS = """
     
         Tree {
@@ -76,11 +74,13 @@ class ProjectTree(Container):
         if not self.selected_service:
             return
 
-        external_shell = config['external_shell']
-        if not external_shell:
+        exec_cmd: str = str(config['docker_exec'])
+        if not exec_cmd:
             return
 
-        os.system(external_shell + ' docker exec -it ouronyx_phpfpm bash')
+        exec_cmd = exec_cmd.replace('{cmd}', f"-it {self.selected_service.container_name} bash")
+
+        os.system(exec_cmd)
 
     def watch_projects(self, old, new) -> None:
         self.set_projects(new)
