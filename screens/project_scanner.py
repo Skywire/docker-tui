@@ -13,6 +13,7 @@ from textual.widgets import DirectoryTree, Button, Header, Footer, Label, ListVi
 from textual.widgets._directory_tree import DirEntry
 from textual.widgets._header import HeaderIcon
 
+from config import get_project_home
 from docker_service.service import find_compose_files, get_docker_compose_services
 from entities.project_db import add_project
 from models.project_model import ProjectModel
@@ -62,7 +63,7 @@ class ProjectScanner(Screen):
         yield Label("Select a directory to recursively scan for docker-compose files", classes='heading')
         yield Horizontal(
             Vertical(
-                DirectoryTree(join(os.path.expanduser('~') + "/")),
+                DirectoryTree(get_project_home()),
                 Label("Check a filename to add the project", classes='heading'),
                 ListView(ListItem(Label("Waiting for scan")), id="file-list"),
                 id="content"

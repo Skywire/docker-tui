@@ -4,7 +4,7 @@ from os.path import dirname
 from pathlib import Path
 from typing import Optional
 
-from textual import events
+from textual import events, log
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.message import Message
@@ -14,10 +14,9 @@ from textual.widgets._directory_tree import DirEntry
 from textual.widgets._header import HeaderIcon
 
 from docker_service.service import get_docker_compose_services
-from entities.project_db import add_project, get_home_directory, set_home_directory, has_home_directory, \
-    delete_home_directory
+from config import get_project_home
+from entities.project_db import add_project
 from models.project_model import ProjectModel
-from screens.project_scanner import ProjectScanner
 
 
 class ComposeDirectoryTree(DirectoryTree):
@@ -70,29 +69,23 @@ class ProjectFinder(Screen):
         yield Header()
         yield Label("Select a docker-compose file to add", id='heading')
         yield Horizontal(
-            ComposeDirectoryTree(get_home_directory()),
+            ComposeDirectoryTree(get_project_home()),
             Vertical(
                 Button("Add Project", disabled=True, id="add"),
-                Button("Set home directory", disabled=True,
-                       id="home"),
-                Button("Unset home directory", disabled=not has_home_directory(),
-                       id="unset_home"),
                 id="buttons"
-            ),
+            )
         )
         yield Footer()
 
     def _on_mount(self, event: events.Mount) -> None:
-        self.query_one(HeaderIcon).icon = '🐋';
+        self.query_one(HeaderIcon).icon = '🐋'
 
     def on_tree_node_highlighted(self, event: DirectoryTree.NodeHighlighted):
         self.selected_file = None
         self.selected_dir = None
         self.query_one('#add').disabled = True
-        self.query_one('#home').disabled = True
 
         if isinstance(event.node.data, DirEntry):
-            self.query_one('#home').disabled = False
             self.selected_dir = event.node.data.path
 
     def on_directory_tree_file_selected(self, event: DirectoryTree.FileSelected):
@@ -108,14 +101,3 @@ class ProjectFinder(Screen):
                 services=get_docker_compose_services(self.selected_file)))
 
             await self.emit(self.ProjectAdded(self))
-
-        if event.button.id == "unset_home" and has_home_directory():
-            delete_home_directory()
-            self.query_one('#unset_home').disabled = True
-
-        if event.button.id == "home":
-            set_home_directory(self.selected_dir)
-            self.query_one('#unset_home').disabled = False
-
-        self.query_one(ComposeDirectoryTree).remove()
-        await self.mount(ComposeDirectoryTree(get_home_directory()), before=self.query_one('#buttons'))

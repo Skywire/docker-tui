@@ -1,12 +1,9 @@
-import os
-from os.path import join
-
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import Header, Footer, TextLog
 from textual.widgets._header import HeaderIcon
 
-from docker_service.service import find_compose_files
+from config import load_config
 from entities.project_db import get_projects
 from screens.project_finder import ProjectFinder
 from screens.project_scanner import ProjectScanner
@@ -47,6 +44,7 @@ class DockerApp(App):
         yield Footer()
 
     def on_mount(self) -> None:
+        load_config()
         self.update_projects()
         self.query_one(HeaderIcon).icon = '🐋'
 
@@ -65,5 +63,7 @@ class DockerApp(App):
 
 
 if __name__ == '__main__':
+    load_config()
+
     app = DockerApp()
     app.run()
