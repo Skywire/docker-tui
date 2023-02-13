@@ -1,5 +1,4 @@
 import os
-import shutil
 from os.path import join
 
 import yaml
@@ -13,8 +12,8 @@ def load_config():
         return
 
     if not os.path.isfile(config_path):
-        template_path = os.path.dirname(os.path.realpath(__file__)) + '/.config.yml.dist'
-        shutil.copy(template_path, config_path)
+        with open(config_path, 'w') as file:
+            file.writelines(get_default_config())
 
     with open(config_path, 'r') as file:
         for k, v in yaml.safe_load(file).items():
@@ -26,6 +25,14 @@ def get_project_home() -> str:
         return config['project_home']
 
     return join(os.path.expanduser('~') + "/")
+
+
+def get_default_config():
+    return f"""project_home: {get_project_home()}""" + \
+        """
+# docker_exec: gnome-terminal -- docker exec {cmd} # linux
+# docker_exec: osascript -e 'tell app "Terminal" to do script "docker exec {cmd}"' # macOS
+"""
 
 
 if __name__ == '__main__':
