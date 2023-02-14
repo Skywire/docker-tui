@@ -47,24 +47,26 @@ class ProjectTree(Container):
         yield self.tree
 
     def action_docker_up(self):
+        self.text_log.clear()
+
         docker: DockerClient = DockerClient(compose_files=self.selected_project.file)
 
         output = docker.compose.up(detach=True)
 
         for line in output:
-            self.text_log.clear()
             self.text_log.write(line)
 
         self.containers = get_containers()
         self.set_projects(get_projects())
 
     def action_docker_down(self):
+        self.text_log.clear()
+
         docker: DockerClient = DockerClient(compose_files=self.selected_project.file)
 
         output = docker.compose.down()
 
         for line in output:
-            self.text_log.clear()
             self.text_log.write(line)
 
         self.containers = get_containers()
