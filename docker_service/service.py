@@ -13,10 +13,13 @@ def get_docker_compose_services(compose_file: str) -> Dict[str, ComposeConfigSer
     return compose_services
 
 
+"""
+Return currently running containers
+"""
 def get_containers() -> Dict[str, Container]:
     client = DockerClient()
 
-    return {c.name: c for c in client.container.list(True)}
+    return {c.name: c for c in client.container.list()}
 
 
 def find_compose_files(start_path: str, exclude_patterns: Optional[List[str]] = None) -> Generator[str, None, None]:
