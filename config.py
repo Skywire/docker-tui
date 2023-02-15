@@ -31,7 +31,6 @@ def get_default_config():
     return f"""project_home: {get_project_home()}""" + \
         """
 # docker_exec: gnome-terminal -- docker exec {cmd} # linux
-# docker_exec: osascript -e 'tell app "Terminal" to do script "docker exec {cmd}"' # macOS
 """
 
 

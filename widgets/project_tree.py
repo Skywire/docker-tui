@@ -1,4 +1,5 @@
 import os
+import subprocess
 from typing import Optional, Dict
 
 from python_on_whales import DockerClient, Service
@@ -82,7 +83,7 @@ class ProjectTree(Container):
 
         exec_cmd = exec_cmd.replace('{cmd}', f"-it {self.selected_service.container_name} bash")
 
-        os.system(exec_cmd)
+        subprocess.Popen(exec_cmd, shell=True)
 
     def watch_projects(self, old, new) -> None:
         self.set_projects(new)

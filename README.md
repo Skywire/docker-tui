@@ -18,4 +18,3 @@ The config file will be created in `~/.docker-tui/.config.yml` on the first appl
 Options are:
     
 * project_home - The default path for your project directories, this will be used by the project finder screen, leave blank to keep it as your home directory
-* docker_exec - The docker exec command that will spawn a new terminal, Linux and macOS examples are provided
