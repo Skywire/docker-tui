@@ -36,6 +36,7 @@ class ProjectTree(Container):
     container_update_timer: Timer = None
 
     BINDINGS = [
+        ('b', 'docker_build', 'Docker Build'),
         ('d', 'docker_down', 'Docker Down'),
         ('u', 'docker_up', 'Docker Up'),
         ('s', 'container_shell', 'Open Container Shell')
@@ -49,6 +50,17 @@ class ProjectTree(Container):
 
         yield self.tree
 
+    def action_docker_build(self):
+        self.text_log.clear()
+
+        docker: DockerClient = DockerClient(compose_files=self.selected_project.file)
+
+        with self.app.suspend():
+            docker.compose.build()
+
+        self.containers = get_containers()
+        self.set_projects(get_projects())
+
     def action_docker_up(self):
         self.text_log.clear()
 
@@ -58,7 +70,6 @@ class ProjectTree(Container):
             docker.compose.up(detach=True)
 
         self.containers = get_containers()
-
         self.set_projects(get_projects())
 
     def action_docker_down(self):
