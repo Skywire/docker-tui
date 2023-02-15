@@ -1,3 +1,7 @@
+import sys
+from contextlib import contextmanager, redirect_stdout, redirect_stderr
+from typing import Iterator
+
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import Header, Footer, TextLog
@@ -61,6 +65,15 @@ class DockerApp(App):
     def on_project_scanner_project_added(self):
         self.update_projects()
 
+    @contextmanager
+    def suspend(self) -> Iterator[None]:
+        driver = self.app._driver
+
+        if driver is not None:
+            driver.stop_application_mode()
+            with redirect_stdout(sys.__stdout__), redirect_stderr(sys.__stderr__):
+                yield
+            driver.start_application_mode()
 
 if __name__ == '__main__':
     load_config()

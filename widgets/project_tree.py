@@ -1,6 +1,8 @@
 import os
 import subprocess
-from typing import Optional, Dict
+import sys
+from contextlib import contextmanager, redirect_stdout, redirect_stderr
+from typing import Optional, Dict, Iterator
 
 from python_on_whales import DockerClient, Service
 from textual import events, log
@@ -52,12 +54,11 @@ class ProjectTree(Container):
 
         docker: DockerClient = DockerClient(compose_files=self.selected_project.file)
 
-        output = docker.compose.up(detach=True)
-
-        for line in output:
-            self.text_log.write(line)
+        with self.app.suspend():
+            docker.compose.up(detach=True)
 
         self.containers = get_containers()
+
         self.set_projects(get_projects())
 
     def action_docker_down(self):
@@ -65,10 +66,8 @@ class ProjectTree(Container):
 
         docker: DockerClient = DockerClient(compose_files=self.selected_project.file)
 
-        output = docker.compose.down()
-
-        for line in output:
-            self.text_log.write(line)
+        with self.app.suspend():
+            docker.compose.down()
 
         self.containers = get_containers()
         self.set_projects(get_projects())
